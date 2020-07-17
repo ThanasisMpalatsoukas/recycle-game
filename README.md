@@ -13,7 +13,7 @@ To change the game speed and the images that are used simply go to **./script.js
 | amountOfLosingEl | Integer | Amount of elements that need to be spawned the same time on the board to lose the game |
 
 **Example**
-```
+```javascript
 let CONFIG = {
     speed: 2000,
     bin: {
