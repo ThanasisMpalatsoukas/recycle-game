@@ -3,8 +3,7 @@
  */
 
 /**
- * Configurations for the working of
- * the game!
+ * Configurations of the game!
  */
 
 let CONFIG = {
@@ -26,7 +25,10 @@ let CONFIG = {
  * doing.
  */
 
-
+/**
+ * Has a collection of recycable items
+ * and acts on them collectively.
+ */
 function RecycableCollection() {
     this.recycables = [];
     
@@ -40,6 +42,8 @@ function RecycableCollection() {
     }
 
     /**
+     * Find a recycable by its id
+     * 
      * @param {Int} key 
      * 
      * @returns {Recycable} rec
@@ -53,6 +57,13 @@ function RecycableCollection() {
         });
         return rec;
     }
+
+    /**
+     * 
+     * @param {Int} key 
+     * 
+     * @returns {Void}
+     */
     this.remove = (key) => {
         for (let i=0;i<this.recycables.length;i++) {
             if (this.recycables[i].key == key) {
@@ -61,6 +72,10 @@ function RecycableCollection() {
             }
         }
     }
+
+    /**
+     * Reset the recycable class
+     */
     this.removeAll = () => {
         this.recycables.map( rec => {
             rec.deleteEl();
@@ -69,6 +84,10 @@ function RecycableCollection() {
     }
 }
 
+/**
+ * Has a collection of bins
+ * and acts on them collectively.
+ */
 function BinCollection() {
     this.bins = [];
 
@@ -110,6 +129,7 @@ function BinCollection() {
 }
 
 /**
+ * The main object of the game.
  * 
  * @param {String} name 
  * @param {Integer} points 
@@ -125,6 +145,10 @@ function Recycable (name, points, key, binKey, imgSrc) {
     this.el = "";
     this.id = "k" + key;
 
+    /**
+     * Create an object in the game grid and give him the properties to function
+     * as a draggable item.
+     */
     this.createEl = () => {
         let topOf = Math.floor((Math.random() * gameObjectEl.clientHeight));
         let leftOf = Math.floor((Math.random() * gameObjectEl.clientWidth));
@@ -147,6 +171,9 @@ function Recycable (name, points, key, binKey, imgSrc) {
         gameObjectEl.appendChild(div);
     }
 
+    /**
+     * Removes item. Usually is used when the item is draggen in a bin.
+     */
     this.deleteEl = () => {
         if (this.el != "") {
             gameObjectEl.removeChild(this.el);
@@ -157,7 +184,10 @@ function Recycable (name, points, key, binKey, imgSrc) {
 /**
  * 
  * @param {String} name 
- * @param {Integer} key 
+ * @param {Int} key 
+ * @param {HTMLElement} alert 
+ * @param {HTMLElement} alertFail 
+ * @param {HTMLElement} el 
  */
 function Bin(name, key, alert, alertFail, el) {
     this.name = name;
@@ -186,6 +216,7 @@ let bin3 = new Bin("bin3", 2, "point-alert-bin-3", "point-alert-lose-bin-3", all
 let incremental = 0;
 let timeKeeper = 0;
 
+// Keep time.
 let timeKeeping = setInterval( () => {
     timeKeeper++;
 }, 1000);
@@ -193,16 +224,14 @@ let timeKeeping = setInterval( () => {
 /**
  * Adding items to drag to bins
  */
-let ok = "";
+let interval = null;
 
 binCollection.addBin(bin1);
 binCollection.addBin(bin2);
 binCollection.addBin(bin3);
 
-beginMessage.style.display = "flex";
-
 function startGame() {
-    ok = setInterval(gameInterval, CONFIG.speed);
+    interval = setInterval(gameInterval, CONFIG.speed);
     beginMessage.style.display = "none";
 }
 
@@ -238,7 +267,7 @@ function triggerDrop(event, bin = null) {
          * Winning condition!
          */
         if (parseInt(pointsShow.innerHTML) >= CONFIG.winningPoints) {
-            clearInterval(ok);
+            clearInterval(interval);
             clearInterval(timeKeeping);
             let formattedTime = computeSecondsAndMin(timeKeeper);
             timeSpan.innerHTML = formattedTime; 
@@ -275,8 +304,6 @@ function triggerDrop(event, bin = null) {
 }
 
 let points = 0;
-let currentElement = "";
-let haveEl = 0;
 
 function dragStart(event) {
     currentRec = recycableCollection.find(event.currentTarget.getAttribute("key"));
@@ -320,7 +347,7 @@ function computeSecondsAndMin(sec) {
         min = Math.floor(sec/60);
         sec -= min*60;
     }
-    return min+"m"+" "+sec+"s";
+    return `${min}m ${sec}s`;
 }
 
 function randomNumbGenerator(low, high) {
@@ -329,7 +356,7 @@ function randomNumbGenerator(low, high) {
 
 function reStart() {
     restartGame();
-    ok = setInterval( gameInterval, CONFIG.speed);
+    interval = setInterval( gameInterval, CONFIG.speed);
     timeKeeping = setInterval( () => {
         timeKeeper++;
     }, 1000);
@@ -343,12 +370,15 @@ function restartGame() {
     losingScreen.style.display = "none";
 }
 
+/**
+ * This gets repeated on every time the user has specified as speed
+ */
 function gameInterval() {
     let binKey = Math.floor((Math.random() * 3));
     
     // Losing condition
     if (recycableCollection.recycables.length > CONFIG.amountOfLosingEl) {
-        clearInterval(ok);
+        clearInterval(interval);
         clearInterval(timeKeeping);
         losingScreen.style.display = "flex";
         recycableCollection.removeAll();
@@ -397,3 +427,6 @@ doElsCollide = function(el1, el2) {
              (el1.offsetRight < el2.offsetLeft) ||
              (el1.offsetLeft > el2.offsetRight))
 };
+
+// Misc
+beginMessage.style.display = "flex";
