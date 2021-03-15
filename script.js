@@ -160,7 +160,7 @@ function Recycable (name, points, key, binKey, imgSrc) {
         div.setAttribute("ontouchstart", "mobileTouchStart(event);");
         div.setAttribute("ontouchmove", "mobileTouchMove(event);");
         div.setAttribute("ontouchend", "mobileTouchEnd(event);");
-        div.style.backgroundImage = "url(./images/r" + this.imgSrc + ".png)";
+        div.style.backgroundImage = "url(/images/r" + this.imgSrc + ".png)";
         div.style.backgroundSize = "cover";
         div.style.backgroundPosition = "center";
         div.classList = imgSrc + " object";
